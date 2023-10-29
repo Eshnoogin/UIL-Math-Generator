@@ -95,8 +95,8 @@ class RepeatingSummation(QuestionGenerator):
 class BaseAddition(QuestionGenerator):
     def generate_value(self):
         base1 = random.randint(2, 9)
-        x = [str(random.randint(0, base1 - 1)) for _ in range(2)]
-        y = [str(random.randint(0, base1 - 1)) for _ in range(2)]
+        x = [str(random.randint(1, base1 - 1)) for _ in range(2)]
+        y = [str(random.randint(1, base1 - 1)) for _ in range(2)]
 
         return [base1, ''.join(x),  ''.join(y)]
 
