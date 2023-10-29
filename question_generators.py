@@ -1,5 +1,6 @@
 import datetime
 import random
+from math import floor
 
 from util import QuestionGenerator, generator
 from fractions import Fraction
@@ -26,6 +27,7 @@ class TimeDifferenceGen(QuestionGenerator):
         minutes_difference = int(time_difference.total_seconds() / 60)
         return minutes_difference
 
+
 @generator
 # generate factored form (ax + b)(cx+d) -> x intercepts are -b/a and -d/c; A = ac, B = ad + bc, C = bd
 class QuadraticZerosGen(QuestionGenerator):
@@ -46,11 +48,13 @@ class QuadraticZerosGen(QuestionGenerator):
             except ZeroDivisionError:
                 return "No Solutions"
 
+
 @generator
 # generate (i1, i2), m1 = a/b, m2 = c/d -> Line1: m = m1, b = -m1i1+i2, Line2: m = m2, b = -m2i1 + i2
 class IntersectingLinesGen(QuestionGenerator):
     def generate_value(self):
-        return [random.randint(-50, 50), random.randint(-50, 50), random.randint(-10, 10) / random.randint(1, 10), random.randint(-10, 10) / random.randint(1, 10)]
+        return [random.randint(-50, 50), random.randint(-50, 50), random.randint(-10, 10) / random.randint(1, 10),
+                random.randint(-10, 10) / random.randint(1, 10)]
 
     def generate_text(self, values):
         i1, i2, m1, m2 = values
@@ -61,6 +65,7 @@ class IntersectingLinesGen(QuestionGenerator):
 
     def generate_answer(self, values):
         return f'({values[0]}, {values[1]})'
+
 
 @generator
 class SimpleAdditionSubtractionThreeTerms(QuestionGenerator):
@@ -85,3 +90,29 @@ class RepeatingSummation(QuestionGenerator):
 
     def generate_answer(self, values):
         return int(values[0] * (values[1] * (values[1] + 1) / 2))
+
+@generator
+class BaseAddition(QuestionGenerator):
+    def generate_value(self):
+        base1 = random.randint(2, 10)
+        x = [str(random.randint(0, base1 - 1)) for _ in range(2)]
+        y = [str(random.randint(0, base1 - 1)) for _ in range(2)]
+
+        return [base1, ''.join(x),  ''.join(y)]
+
+    def generate_text(self, values):
+        return f'What is {values[1]}(base {values[0]}) + {values[2]}(base {values[0]}) in base {values[0]}?'
+
+    def generate_answer(self, values):
+        carry = 0
+        answer = []
+        for i in range(len(values[1]) - 1, -1, -1):
+            if int(values[1][i]) + int(values[2][i]) + carry >= values[0]:
+                carry = floor((int(values[1][i]) + int(values[2][i]) + carry) / values[0])
+                answer.append(str(int(values[1][i]) + int(values[2][i]) - carry*int(values[0])))
+            else:
+                carry = 0
+                answer.append(str(int(values[1][i]) + int(values[2][i]) - carry*int(values[0])))
+        answer.append(str(carry))
+        answer.reverse()
+        return ''.join(answer)
