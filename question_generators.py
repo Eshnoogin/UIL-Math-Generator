@@ -145,7 +145,7 @@ class CubeOfSquare(QuestionGenerator):
 class PercentOff(QuestionGenerator):
 
     def generate_value(self):
-        return [random.randint(1, 25) * 4, random.randint(20, 80) * 5]
+        return [random.randint(1, 23) * 4, random.randint(20, 80) * 5]
 
     def generate_text(self, values):
         return (f'Long bought a phone that was on sale for {values[0]}% off the original price. If the original price '
