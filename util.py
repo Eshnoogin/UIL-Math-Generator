@@ -99,10 +99,11 @@ class Quiz:
 
     def generate_answer_key(self, z=1, x=10, y=10):
         self.pdf.add_page()
+        self.pdf.set_font(size=20)
+        self.pdf.cell(200, 10, txt="Math UIL Answer Key", ln=True, align='C')
+        self.pdf.set_font(size=10)
         answer_choice = ["A", "B", "C", "D", "E"]
 
         for questions in self.questions:
             self.pdf.cell(x, y, txt=f"{z}.   {answer_choice[questions.correct_index]}", ln=True)
             z += 1
-        x += 10
-        y += 10
