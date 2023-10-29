@@ -2,7 +2,6 @@ import random
 from abc import ABC, abstractmethod
 from fpdf import FPDF, XPos, YPos
 
-
 answer_choices = 5
 questions = 25
 question_generators = []
@@ -34,6 +33,12 @@ class QuestionGenerator(ABC):
     def generate_answer(self, values):
         pass
 
+    def if_integer(self, correct_value):
+        try:
+            int(self.correct_value)
+        except:
+            return False
+
     def generate_question(self):
         answers = []
         correct_index = random.randint(0, answer_choices - 1)
@@ -41,10 +46,15 @@ class QuestionGenerator(ABC):
         question = self.generate_text(correct_value)
 
         for i in range(0, answer_choices):
+            hi = self.if_integer(correct_value)
             if i == correct_index:
                 answers.append(self.generate_answer(correct_value))
             else:
-                answers.append(self.generate_answer(self.generate_value()))
+                if hi is not False:
+                    answers.append(
+                        self.generate_answer(random.randint(correct_value - len(correct_value)*10, random.randint(correct_value)+len(correct_value)*10)))
+                else:
+                    answers.append(self.generate_answer(self.generate_value()))
 
         return Question(question, answers, correct_index)
 
@@ -74,11 +84,12 @@ class Quiz:
             answers = question.answer_choice_list
 
             # Add the first block of text and answer choices
-            self.pdf.multi_cell(cell_width, 5, f'({self.question_number})          {question.question}', new_x=XPos.LMARGIN,
-                           new_y=YPos.NEXT)
+            self.pdf.multi_cell(cell_width, 5, f'({self.question_number})          {question.question}',
+                                new_x=XPos.LMARGIN,
+                                new_y=YPos.NEXT)
             self.pdf.cell(cell_width, 10,
-                     f'A) {answers[0]}     B) {answers[1]}     C) {answers[2]}     D) {answers[3]}     E) {answers[4]}',
-                     align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+                          f'A) {answers[0]}     B) {answers[1]}     C) {answers[2]}     D) {answers[3]}     E) {answers[4]}',
+                          align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
             self.pdf.cell(cell_width, 10, f'', align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
             print(question.correct_index)
