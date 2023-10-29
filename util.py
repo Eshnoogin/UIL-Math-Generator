@@ -52,7 +52,8 @@ class QuestionGenerator(ABC):
             else:
                 if hi is not False:
                     answers.append(
-                        self.generate_answer(random.randint(correct_value - len(correct_value)*10, random.randint(correct_value)+len(correct_value)*10)))
+                        self.generate_answer(random.randint(correct_value - len(correct_value) * 10,
+                                                            random.randint(correct_value) + len(correct_value) * 10)))
                 else:
                     answers.append(self.generate_answer(self.generate_value()))
 
@@ -92,6 +93,16 @@ class Quiz:
                           align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
             self.pdf.cell(cell_width, 10, f'', align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
-            print(question.correct_index)
             self.question_number += 1
+        self.generate_answer_key()
         self.pdf.output(f'{self.name}.pdf')
+
+    def generate_answer_key(self, z=1, x=10, y=10):
+        self.pdf.add_page()
+        answer_choice = ["A", "B", "C", "D", "E"]
+
+        for questions in self.questions:
+            self.pdf.cell(x, y, txt=f"{z}.   {answer_choice[questions.correct_index]}", ln=True)
+            z += 1
+        x += 10
+        y += 10
