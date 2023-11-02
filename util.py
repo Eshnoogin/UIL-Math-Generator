@@ -1,5 +1,6 @@
 import random
 from abc import ABC, abstractmethod
+import warnings
 from fpdf import FPDF, XPos, YPos
 
 answer_choices = 5
@@ -11,6 +12,11 @@ def generator(cls):
     question_generators.append(cls())
     return cls
 
+def generate_random_number_excluding(num_to, num_from, exclude):
+    num = random.randint(num_to, num_from)
+    while num in exclude:
+        num = random.randint(num_to, num_from)
+    return num
 
 class Question:
     def __init__(self, question, answer_choice_list, correct_index):
@@ -33,30 +39,28 @@ class QuestionGenerator(ABC):
     def generate_answer(self, values):
         pass
 
-    def if_integer(self, correct_value):
+    def generate_range(self, correct_answer, correct_index):
+        answers = []
         try:
-            int(self.correct_value)
-        except:
-            return False
+            correct_answer = int(correct_answer)
+            for i in range(5):
+                answers.append(generate_random_number_excluding(correct_answer- 10, correct_answer + 10, answers))
+            answers[correct_index] = correct_answer
+        except ValueError:
+            answers = [self.generate_answer(self.generate_value()) for _ in range(5)]
+            answers[correct_index] = correct_answer
+            warnings.warn(f'Question generator, {type(self).__name__}, does not have an explicit generate_range method.')
+        return answers
+
+
 
     def generate_question(self):
-        answers = []
         correct_index = random.randint(0, answer_choices - 1)
         correct_value = self.generate_value()
+        correct_answer = self.generate_answer(correct_value)
         question = self.generate_text(correct_value)
 
-        for i in range(0, answer_choices):
-            hi = self.if_integer(correct_value)
-            if i == correct_index:
-                answers.append(self.generate_answer(correct_value))
-            else:
-                if hi is not False:
-                    answers.append(
-                        self.generate_answer(random.randint(correct_value - len(correct_value)*10, random.randint(correct_value)+len(correct_value)*10)))
-                else:
-                    answers.append(self.generate_answer(self.generate_value()))
-
-        return Question(question, answers, correct_index)
+        return Question(question, self.generate_range(correct_answer, correct_index), correct_index)
 
 
 class Quiz:
@@ -92,6 +96,11 @@ class Quiz:
                           align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
             self.pdf.cell(cell_width, 10, f'', align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
-            print(question.correct_index)
             self.question_number += 1
         self.pdf.output(f'{self.name}.pdf')
+        self.generate_answer_key()
+
+    def generate_answer_key(self):
+        for questions in self.questions:
+            print(questions.correct_index)
+
