@@ -91,14 +91,15 @@ class RepeatingSummation(QuestionGenerator):
     def generate_answer(self, values):
         return int(values[0] * (values[1] * (values[1] + 1) / 2))
 
+
 @generator
 class BaseAddition(QuestionGenerator):
     def generate_value(self):
-        base1 = random.randint(2, 10)
-        x = [str(random.randint(0, base1 - 1)) for _ in range(2)]
-        y = [str(random.randint(0, base1 - 1)) for _ in range(2)]
+        base1 = random.randint(2, 9)
+        x = [str(random.randint(1, base1 - 1)) for _ in range(2)]
+        y = [str(random.randint(1, base1 - 1)) for _ in range(2)]
 
-        return [base1, ''.join(x),  ''.join(y)]
+        return [base1, ''.join(x), ''.join(y)]
 
     def generate_text(self, values):
         return f'What is {values[1]}(base {values[0]}) + {values[2]}(base {values[0]}) in base {values[0]}?'
@@ -109,13 +110,14 @@ class BaseAddition(QuestionGenerator):
         for i in range(len(values[1]) - 1, -1, -1):
             if int(values[1][i]) + int(values[2][i]) + carry >= values[0]:
                 carry = floor((int(values[1][i]) + int(values[2][i]) + carry) / values[0])
-                answer.append(str(int(values[1][i]) + int(values[2][i]) - carry*int(values[0])))
+                answer.append(str(int(values[1][i]) + int(values[2][i]) - carry * int(values[0])))
             else:
                 carry = 0
-                answer.append(str(int(values[1][i]) + int(values[2][i]) - carry*int(values[0])))
+                answer.append(str(int(values[1][i]) + int(values[2][i]) - carry * int(values[0])))
         answer.append(str(carry))
         answer.reverse()
         return ''.join(answer)
+
 
 @generator
 class Percentage(QuestionGenerator):
@@ -172,3 +174,32 @@ class PointSlopeForm(QuestionGenerator):
         if "-" not in answer:
             answer = "+ " + answer
         return f'y = {values[2]}x {answer}'
+
+
+@generator
+class SolutionsOfSaltAndWater(QuestionGenerator):
+    def generate_value(self):
+        return [random.randint(5, 20) * 5, random.randint(5, 8) * 10, random.randint(2, 9) * 5]
+
+    def generate_text(self, values):
+        return (f'How many centiliters of water must be added to {values[0]} centiliters of a {values[1]}% salt '
+                f'solution in order to produce a {values[2]}% salt solution?')
+
+    def generate_answer(self, values):
+        try:
+            return int((values[0] * values[1] * .01) / (values[2] * .01) - values[0])
+        except ZeroDivisionError:
+            return "None of the Above"
+
+
+@generator
+class RatioOfCircle(QuestionGenerator):
+    def generate_value(self):
+        return [random.randint(2, 9), random.randint(2, 9), random.randint(2, 9), random.randint(2, 12)]
+
+    def generate_text(self, values):
+        return f'The sides of a triangle are in the ratio of {values[0]}:{values[1]}:{values[2]}. If the perimeter is {(values[0] + values[1] + values[2]) * values[3]}, find the length of the longest side.'
+
+    def generate_answer(self, values):
+        length = max(values[0], values[1], values[2])
+        return length * (((values[0] + values[1] + values[2]) * values[3]) / (values[0] + values[1] + values[2]))
