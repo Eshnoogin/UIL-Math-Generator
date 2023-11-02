@@ -187,6 +187,19 @@ class SolutionsOfSaltAndWater(QuestionGenerator):
 
     def generate_answer(self, values):
         try:
-            return int((values[0] * values[1] * .01)/(values[2]*.01) - values[0])
+            return int((values[0] * values[1] * .01) / (values[2] * .01) - values[0])
         except ZeroDivisionError:
             return "None of the Above"
+
+
+@generator
+class RatioOfCircle(QuestionGenerator):
+    def generate_value(self):
+        return [random.randint(2, 9), random.randint(2, 9), random.randint(2, 9), random.randint(2, 12)]
+
+    def generate_text(self, values):
+        return f'The sides of a triangle are in the ratio of {values[0]}:{values[1]}:{values[2]}. If the perimeter is {(values[0] + values[1] + values[2]) * values[3]}, find the length of the longest side.'
+
+    def generate_answer(self, values):
+        length = max(values[0], values[1], values[2])
+        return length * (((values[0] + values[1] + values[2]) * values[3]) / (values[0] + values[1] + values[2]))
