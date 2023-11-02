@@ -109,4 +109,5 @@ class Quiz:
 
         for questions in self.questions:
             self.pdf.cell(x, y, txt=f"{z}.   {answer_choice[questions.correct_index]}", ln=True)
+            z+=1
 
